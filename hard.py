@@ -17,11 +17,54 @@ A good solution is favourable but does not guarantee a spot in Projects because
 we will also consider many other criteria.
 """
 import json
+import re
+import string
 
 # NOTE: DO NOT EDIT conditions.json
 with open("./conditions.json") as f:
     CONDITIONS = json.load(f)
     f.close()
+
+def req_check(courses_list, req_string):
+
+    print(req_string)
+
+    if ("") :
+        return True
+
+    if(req_string[0] == '(' and req_string[-1] == ")"):
+        return req_check(courses_list, req_string[1:-1])
+
+    course = re.compile(r"^(((COMP)|(DPST)|(ELEC)|(MTRN))\d{4})$")
+
+    if (course.search(req_string) != None):
+        return (req_string in courses_list)
+
+    coursecode = re.compile(r"\d{4})$")
+    if (course.search(req_string) != None):
+        return (("COMP" + req_string) in courses_list)
+
+    atom = re.compile(r"(((COMP)|(DPST)|(ELEC)|(MTRN))\d{4})|\(.*\)")
+    oratom = re.compile(r"((((COMP)|(DPST)|(ELEC)|(MTRN))\d{4})|\(.*\).*(or|OR))")
+    andatom = re.compile(r"((((COMP)|(DPST)|(ELEC)|(MTRN))\d{4})|\(.*\).*(and|AND))")
+
+    atomhold = atom.search(req_string)
+    orhold = oratom.search(req_string)
+    andhold = andatom.search(req_string)
+
+    if(atomhold != None): 
+        #print(atomhold.group())
+
+    if(orhold != None):
+        #print(orhold.group())
+        return req_check(courses_list,atomhold.group().strip()) or req_check(courses_list,req_string[len(orhold.group()):].strip()) 
+
+    if(orhold != None):
+        #print(orhold.group())
+        return req_check(courses_list,atomhold.group().strip()) or req_check(courses_list,req_string[len(orhold.group()):].strip()) 
+
+    return True
+
 
 def is_unlocked(courses_list, target_course):
     """Given a list of course codes a student has taken, return true if the target_course 
@@ -32,11 +75,17 @@ def is_unlocked(courses_list, target_course):
 
     You can assume all courses are worth 6 units of credit
     """
-    
-    # TODO: COMPLETE THIS FUNCTION!!!
-    
-    return True
+   
 
+    return req_check(courses_list,(re.sub(r"Pre.*:","",CONDITIONS[target_course])).strip())
+    # TODO: COMPLETE THIS FUNCTION!!!
+
+#print(re.sub(r"Pre.*:","",CONDITIONS["COMP1511"]).strip())
+
+#if (is_unlocked(["DPST1091"],"COMP1521") == True):
+#    print("success")
+#else:
+#    print("fail")
 
 
 
