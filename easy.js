@@ -32,7 +32,29 @@ var assert = require("assert")
 
 const altNumbers = (numArray) => {
     // TODO: COMPLETE THIS FUNCTION
-    return [];
+
+    let pos = numArray.filter(function (val) {return val >= 0;});
+    let neg = numArray.filter(function (val) {return val <  0;});
+   
+    let countpos = 0;
+    let countneg = 0;
+
+    let nextpos = (pos.length >= neg.length) 
+
+    let posneglist = [];
+    while(countpos + countneg < numArray.length){
+	if(nextpos){
+		posneglist.push(pos[countpos]);
+		countpos = countpos + 1;
+		nextpos = false;
+	} else {
+		posneglist.push(neg[countneg]);
+		countneg = countneg + 1;
+		nextpos = true;
+	}
+    }
+
+    return posneglist;
 }
 
 module.exports = { altNumbers } // Do not modify this line

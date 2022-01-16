@@ -25,45 +25,45 @@ with open("./conditions.json") as f:
     CONDITIONS = json.load(f)
     f.close()
 
+
+# sorry didnt have time to finish because of supps :(
+
 def req_check(courses_list, req_string):
 
-    print(req_string)
+    #print(req_string)
 
-    if ("") :
+    if (req_string == "") :
         return True
 
     if(req_string[0] == '(' and req_string[-1] == ")"):
-        return req_check(courses_list, req_string[1:-1])
+        return req_check(courses_list, req_string[1:-2])
 
-    course = re.compile(r"^(((COMP)|(DPST)|(ELEC)|(MTRN))\d{4})$")
+    course = re.compile(r"^(((COMP)|(DPST)|(ELEC)|(MTRN)|(MATH))\d{4})$")
 
     if (course.search(req_string) != None):
         return (req_string in courses_list)
 
-    coursecode = re.compile(r"\d{4})$")
+    coursecode = re.compile(r"^\d{4}$")
     if (course.search(req_string) != None):
         return (("COMP" + req_string) in courses_list)
 
-    atom = re.compile(r"(((COMP)|(DPST)|(ELEC)|(MTRN))\d{4})|\(.*\)")
-    oratom = re.compile(r"((((COMP)|(DPST)|(ELEC)|(MTRN))\d{4})|\(.*\).*(or|OR))")
-    andatom = re.compile(r"((((COMP)|(DPST)|(ELEC)|(MTRN))\d{4})|\(.*\).*(and|AND))")
+    atom = re.compile(r"(((COMP)|(DPST)|(MATH)|(ELEC)|(MTRN))\d{4})|\(.*\)")
+    oratom = re.compile(r"((((COMP)|(DPST)|(MATH)|(ELEC)|(MTRN))\d{4})|\(.*\).*(or|OR))")
+    andatom = re.compile(r"((((COMP)|(DPST)|(MATH)|(ELEC)|(MTRN))\d{4})|\(.*\).*(and|AND))")
 
     atomhold = atom.search(req_string)
     orhold = oratom.search(req_string)
     andhold = andatom.search(req_string)
 
-    if(atomhold != None): 
-        #print(atomhold.group())
-
+    #if(orhold != None and (andhold == None or (len(orhold.group()) > len(andhold.group())))):
     if(orhold != None):
-        #print(orhold.group())
-        return req_check(courses_list,atomhold.group().strip()) or req_check(courses_list,req_string[len(orhold.group()):].strip()) 
+        return req_check(courses_list,orhold.group().strip()) or req_check(courses_list,req_string[len(orhold.group()) + 1:].strip()) 
 
-    if(orhold != None):
-        #print(orhold.group())
-        return req_check(courses_list,atomhold.group().strip()) or req_check(courses_list,req_string[len(orhold.group()):].strip()) 
+    #if(andhold != None and (orhold == None or (len(andhold.group()) > len(orhold.group())))):
+    if(andhold != None):
+        return req_check(courses_list,andhold.group().strip()) and req_check(courses_list,req_string[len(orhold.group()) + 1:].strip()) 
 
-    return True
+    return False
 
 
 def is_unlocked(courses_list, target_course):
@@ -82,10 +82,11 @@ def is_unlocked(courses_list, target_course):
 
 #print(re.sub(r"Pre.*:","",CONDITIONS["COMP1511"]).strip())
 
-#if (is_unlocked(["DPST1091"],"COMP1521") == True):
+#if (is_unlocked(["COMP1917", "DPST1092"],"COMP3151") == True):
 #    print("success")
 #else:
 #    print("fail")
+
 
 
 
